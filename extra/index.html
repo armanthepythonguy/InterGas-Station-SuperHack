@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/4.0.3/web3.min.js"></script>
+</head>
+<body>
+    <div>
+        <p>Wallet address - <span id="wallet-address"></span></p>
+        <button onclick="signTransaction()">Sign Data</button>
+    </div>
+    <script type="text/javascript">
+        var account = null;
+        var signature = null;
+        (async() => {
+            if(window.ethereum){
+                await window.ethereum.send('eth_requestAccounts');
+                window.web3 = new Web3(window.ethereum);
+
+                var accounts = await web3.eth.getAccounts();
+                account = accounts[0];
+                document.getElementById('wallet-address').textContent = account;
+            }
+        })();
+
+        async function signTransaction(){
+        let gas = await web3.eth.estimateGas({
+        to: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        from: "0xd38F25af941423cFB776eb63CE5F5Da7b3C4f315",
+        value: web3.utils.toWei(0, 'ether'),
+        data: "0xa9059cbb0000000000000000000000002723895e9afce81a674f26a39a1d683e0992c6770000000000000000000000000000000000000000000000000000000001312d00"
+        })
+        const gasPrice = await web3.eth.getGasPrice();
+        console.log(gas*gasPrice)
+            const msgParams = JSON.stringify({types:
+        {
+        EIP712Domain:[
+          {name:"name",type:"string"},
+          {name:"version",type:"string"},
+          {name:"chainId",type:"uint256"},
+          {name:"verifyingContract",type:"address"}
+        ],
+        transact:[
+          {name:"calldata",type:"bytes"}
+        ]
+      },
+      //make sure to replace verifyingContract with address of deployed contract
+      primaryType:"transact",
+      domain:{name:"RemoteStation",version:"1",chainId:80001,verifyingContract:"0x22d5dcC884F0517DbA3B1c078472a3c03351824F"},
+      message:{
+        calldata: "0xa9059cbb0000000000000000000000002723895e9afce81a674f26a39a1d683e0992c6770000000000000000000000000000000000000000000000000000000001312d00"
+      }
+      })
+      var params = [account, msgParams];
+    var method = 'eth_signTypedData_v4';
+      web3.currentProvider.sendAsync(
+    {
+      method,
+      params,
+      from: account,
+    },
+    async function (err, result) {
+      if (err) return console.dir(err);
+      if (result.error) {
+        alert(result.error.message);
+      }
+      if (result.error) return console.error('ERROR', result);
+      console.log('TYPED SIGNED:' + JSON.stringify(result.result));
+      var sign = result.result.substring(2);
+      console.log("r:- ", "0x"+sign.substring(0, 64));
+      console.log("s:- ", "0x"+sign.substring(64, 128));
+      console.log("v:- ", parseInt(sign.substring(128, 130), 16));
+      const recovered = sigUtil.recoverTypedSignature_v4({
+        data: JSON.parse(msgParams),
+        sig: result.result,
+      });
+
+      if (
+        ethUtil.toChecksumAddress(recovered) === ethUtil.toChecksumAddress(from)
+      ) {
+        alert('Successfully recovered signer as ' + from);
+      } else {
+        alert(
+          'Failed to verify signer when comparing ' + result + ' to ' + from
+        );
+      }
+    }
+  );
+        }
+    </script>
+</body>
+</html>

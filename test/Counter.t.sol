@@ -2,23 +2,19 @@
 pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
-import "../src/Counter.sol";
+import "forge-std/console.sol";
+import "../src/RemoteStation.sol";
 
 contract CounterTest is Test {
-    Counter public counter;
+    RemoteStation public remote;
 
     function setUp() public {
-        counter = new Counter();
-        counter.setNumber(0);
+        remote = new RemoteStation(0xd38F25af941423cFB776eb63CE5F5Da7b3C4f315, 0xd38F25af941423cFB776eb63CE5F5Da7b3C4f315, 0xd38F25af941423cFB776eb63CE5F5Da7b3C4f315);
     }
 
-    function testIncrement() public {
-        counter.increment();
-        assertEq(counter.number(), 1);
-    }
-
-    function testSetNumber(uint256 x) public {
-        counter.setNumber(x);
-        assertEq(counter.number(), x);
+    function test() public{
+        address owner = 0xd38F25af941423cFB776eb63CE5F5Da7b3C4f315;
+        vm.prank(owner);
+        
     }
 }
