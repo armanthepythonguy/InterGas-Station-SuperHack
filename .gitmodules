@@ -2,3 +2,6 @@
 	path = lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
 	branch = v1.6.0
+[submodule "super_swaph"]
+	path = super_swaph
+	url = https://github.com/hridyacp/super_swaph/

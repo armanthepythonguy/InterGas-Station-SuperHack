@@ -18,7 +18,7 @@ contract RemoteStation is Ownable{
         mainStation = _mainStation;
     }
 
-    function sendTransaction(uint8 v, bytes32 r, bytes32 s, bytes memory data, uint8 destDomain, address recipient, uint256 originGas) payable external {
+    function sendTransaction(uint8 v, bytes32 r, bytes32 s, bytes memory data, uint32 destDomain, address recipient, uint256 originGas) payable external {
         uint chainId;
         assembly {
             chainId := chainid()
